@@ -14,11 +14,13 @@ previous versions include gpiodtest_hardcoded_pin_mapping.py and gpiotest_raw.py
 To test this connect LED +ve to GPIO pin 19 and -ve to GND (pin 6) of the radxa zero amlogic board.
 '''
 
+PIN_TO_TEST = 19
+
 GPIO.setmode(GPIO.BOARD)
 
-GPIO.setup(19, GPIO.OUT)
-GPIO.output(19, GPIO.HIGH)
+GPIO.setup(PIN_TO_TEST, GPIO.OUT)
+GPIO.output(PIN_TO_TEST, GPIO.HIGH)
 time.sleep(1)
-GPIO.output(19, GPIO.LOW)
+GPIO.output(PIN_TO_TEST, GPIO.LOW)
 
 GPIO.cleanup()
