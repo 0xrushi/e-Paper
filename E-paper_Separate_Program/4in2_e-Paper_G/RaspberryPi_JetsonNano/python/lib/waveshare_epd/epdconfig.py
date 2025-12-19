@@ -240,7 +240,9 @@ class RadxaZeroGPIOD:
     def spi_writebyte(self, data):
         if self._use_spidev:
             data = list(data)
-            self._dump_file.write(f"SPI Write: {[f'0x{b:02X}' for b in data]}\n")
+            log_msg = f"SPI Write: {[f'0x{b:02X}' for b in data]}"
+            print(log_msg)
+            self._dump_file.write(log_msg + "\n")
             self._dump_file.flush()
             self.SPI.writebytes(data)
         else:
@@ -249,13 +251,15 @@ class RadxaZeroGPIOD:
     def spi_writebyte2(self, data):
         if self._use_spidev:
             # Use writebytes2 for bulk transfers (proven to work on Radxa Zero)
-            self._dump_file.write(f"SPI Write2 ({len(data)} bytes): {[f'0x{b:02X}' for b in data]}\n")
+            log_msg = f"SPI Write2 ({len(data)} bytes): {[f'0x{b:02X}' for b in data]}"
+            print(log_msg[:200] + "..." if len(log_msg) > 200 else log_msg) # Truncate console output
+            self._dump_file.write(log_msg + "\n")
             self._dump_file.flush()
-            
+
             if isinstance(data, (bytes, bytearray)):
-                self.SPI.xfer3(list(data), delay_usec=1200)
+                self.SPI.xfer3(list(data))
             else:
-                self.SPI.xfer3(data, delay_usec=1200)
+                self.SPI.xfer3(data)
         else:
             self._spi_bitbang(data)
 
