@@ -13,6 +13,27 @@ HIGH = 1
 _mode = None
 _lines = {}
 
+# ----- Voltage domains -----
+PIN_VOLTAGE = {
+    # 3.3V safe GPIO
+    3:  "3.3V", 5:  "3.3V",
+    7:  "3.3V", 8:  "3.3V",
+    10: "3.3V", 11: "3.3V",
+    19: "3.3V", 21: "3.3V",
+    22: "3.3V", 23: "3.3V",
+    24: "3.3V", 32: "3.3V",
+    34: "3.3V", 36: "5V_OD",
+    37: "3.3V", 38: "3.3V",
+    40: "3.3V",
+
+    # 1.8V logic
+    12: "1.8V",
+    13: "1.8V",
+    16: "1.8V",
+    18: "1.8V",
+}
+
+
 # ----- Radxa Zero physical pin map -----
 PINMAP = {
     3:  ("gpiochip0", 63),
@@ -48,13 +69,24 @@ def setmode(mode):
         raise ValueError("Only GPIO.BOARD mode is supported")
     _mode = mode
 
-
 def setup(pin, direction, initial=None):
     if _mode != BOARD:
         raise RuntimeError("Call GPIO.setmode(GPIO.BOARD) first")
 
     if pin not in PINMAP:
         raise ValueError(f"Invalid pin: {pin}")
+
+    voltage = PIN_VOLTAGE.get(pin, "unknown")
+    if voltage == "1.8V":
+        print(
+            f"⚠ WARNING: Pin {pin} is 1.8V logic. "
+            "Do NOT connect directly to 3.3V devices."
+        )
+    elif voltage == "5V_OD":
+        print(
+            f"⚠ WARNING: Pin {pin} is open-drain / 5V tolerant. "
+            "External pull-up required."
+        )
 
     chip_name, line_offset = PINMAP[pin]
     chip = gpiod.Chip(chip_name)
