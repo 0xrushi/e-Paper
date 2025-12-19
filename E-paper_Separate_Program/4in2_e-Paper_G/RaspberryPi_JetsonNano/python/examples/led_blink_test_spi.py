@@ -7,6 +7,9 @@ This script tests SPI1 by sending 100,000 bytes of 0xFF followed by
 an LED connected to MOSI at approximately 6.3 times per second.
 
 SPI1 MOSI is on GPIOH_4 (gpio-532, offset 20) - Pin 19 on the 40-pin header.
+
+To test this connect LED +ve to SPI PIN 19 and -ve to GND (pin 6) of the radxa zero amlogic board. 
+which is also labeled GPIO447
 """
 
 import time
