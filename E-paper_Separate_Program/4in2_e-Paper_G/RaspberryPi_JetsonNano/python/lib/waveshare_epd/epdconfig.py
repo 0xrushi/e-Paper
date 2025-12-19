@@ -73,7 +73,8 @@ def _to_bytes(data):
 def spi_writebyte(data):
     tx = _to_bytes(data)
     for i in range(0, len(tx), 1024):
-        _spi.xfer2(tx[i:i + 1024])
+        # first argument is data, second argument is speed in HZ, third argument is chunk-to-chunk delay in microseconds
+        _spi.xfer3(tx[i:i + 1024], 500000, 1200)
 
 
 
