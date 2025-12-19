@@ -86,7 +86,7 @@ class EPD:
     def ReadBusy(self):
         logger.debug("e-Paper busy H")
         epdconfig.delay_ms(100)
-        while(epdconfig.digital_read(self.busy_pin) == 1):      # 0: idle, 1: busy
+        while(epdconfig.digital_read(self.busy_pin) == 0):      # 0: idle, 1: busy
             epdconfig.delay_ms(5)
         logger.debug("e-Paper busy release")
         
@@ -194,13 +194,10 @@ class EPD:
             Width = self.width // 4 + 1
         Height = self.height
 
-        epdconfig.delay_ms(100) # Add delay before starting data transmission
         self.send_command(0x10)
-        
-        # Batch all data into a single buffer for efficiency
-        data = [color] * (Width * Height)
-        self.send_data2(data)
-        
+        for j in range(0, Height):
+            for i in range(0, Width):
+                    self.send_data(color)
         self.TurnOnDisplay()
 
     def sleep(self):
