@@ -34,7 +34,7 @@ from . import epdconfig
 import PIL
 from PIL import Image
 import io
-
+import RADXAZero.GPIO as GPIO
 # Display resolution
 EPD_WIDTH       = 400
 EPD_HEIGHT      = 300
@@ -186,18 +186,22 @@ class EPD:
         self.send_data2(image)
                     
         self.TurnOnDisplay()
-        
-    def Clear(self, color=0x55):
-        if self.width % 4 == 0 :
-            Width = self.width // 4
-        else :
-            Width = self.width // 4 + 1
-        Height = self.height
+    
+    # ToDo, GPIO specific should not be here, remove later.
+    def Clear(self, color=0xFF):
+        # Assert CS once for the whole frame
+        GPIO.output(32, GPIO.LOW)   # CS LOW (GPIOAO_4)
 
         self.send_command(0x10)
-        for j in range(0, Height):
-            for i in range(0, Width):
-                    self.send_data(color)
+        for _ in range(self.width * self.height // 8):
+            self.send_data(color)
+
+        self.send_command(0x13)
+        for _ in range(self.width * self.height // 8):
+            self.send_data(color)
+
+        GPIO.output(32, GPIO.HIGH)  # CS HIGH
+
         self.TurnOnDisplay()
 
     def sleep(self):
