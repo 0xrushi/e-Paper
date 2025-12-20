@@ -38,6 +38,7 @@ CS_PIN   = PIN_CS
 # INTERNAL STATE
 # =============================================================================
 _spi = None
+_is_initialized = False
 
 # =============================================================================
 # GPIO HELPERS (RPi.GPIO compatible)
@@ -45,7 +46,7 @@ _spi = None
 def digital_write(pin, value):
     if pin < 0:
         return
-    print(f"GPIO {pin} <- {'H' if value else 'L'}")
+    # print(f"GPIO {pin} <- {'H' if value else 'L'}")
     GPIO.output(pin, GPIO.HIGH if value else GPIO.LOW)
 
 
@@ -103,7 +104,10 @@ def wait_until_idle(timeout=30):
 # INIT / EXIT
 # =============================================================================
 def module_init(cleanup=False):
-    global _spi
+    global _spi, _is_initialized
+
+    if _is_initialized:
+        return 0
 
     logger.info("Initializing Waveshare 4.2 G EPD")
 
@@ -133,10 +137,11 @@ def module_init(cleanup=False):
     wait_until_idle()
 
     logger.info("EPD initialized successfully")
+    _is_initialized = True
     return 0
 
 def module_exit(cleanup=False):
-    global _spi
+    global _spi, _is_initialized
 
     logger.info("Cleaning up EPD")
 
@@ -145,4 +150,5 @@ def module_exit(cleanup=False):
         _spi = None
 
     GPIO.cleanup()
+    _is_initialized = False
     logger.info("Cleanup complete")

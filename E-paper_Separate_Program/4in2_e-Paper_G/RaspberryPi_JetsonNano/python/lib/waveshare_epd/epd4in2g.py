@@ -53,6 +53,8 @@ class EPD:
         self.WHITE  = 0xffffff   #   01
         self.YELLOW = 0x00ffff   #   10
         self.RED    = 0x0000ff   #   11
+        self.Seconds_1_5S = 0
+        self.Seconds_1S = 1
 
         
     # Hardware reset
@@ -94,6 +96,9 @@ class EPD:
         self.send_command(0x12) # DISPLAY_REFRESH
         self.send_data(0X00)
         self.ReadBusy()
+
+    def TurnOnDisplay_Fast(self):
+        self.TurnOnDisplay()
         
     def init(self):
         if (epdconfig.module_init() != 0):
@@ -149,6 +154,11 @@ class EPD:
         self.ReadBusy()
         return 0
 
+    def init_fast(self, mode):
+        # 4in2g (4-color) does not support the fast init commands from V2.
+        # Fallback to standard init to ensure display works.
+        return self.init()
+
     def getbuffer(self, image):
         # Create a pallette with the 4 colors supported by the panel
         pal_image = Image.new("P", (1,1))
@@ -186,6 +196,9 @@ class EPD:
         self.send_data2(image)
                     
         self.TurnOnDisplay()
+
+    def display_Fast(self, image):
+        self.display(image)
     
     def Clear(self, color=0x55):
         if self.width % 4 == 0:

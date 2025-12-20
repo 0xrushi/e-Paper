@@ -13,57 +13,54 @@ import time
 from PIL import Image,ImageDraw,ImageFont
 import traceback
 
+
+font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
+font18 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 18)
+font35 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 35)
+
+epd = epd4in2g.EPD()
+logging.info("init and Clear")
+epd.init()
 logging.basicConfig(level=logging.DEBUG)
+logging.info("E-paper refreshes quickly")
+# Drawing on the Horizontal image
+epd.init_fast(epd.Seconds_1_5S)
+logging.info("1.Drawing on the Horizontal image...")
+Himage = Image.new('1', (epd.width, epd.height), 255)  # 255: clear the frame
+draw = ImageDraw.Draw(Himage)
+draw.text((10, 0), 'hello world', font = font24, fill = 0)
+draw.text((10, 20), '4.2inch V2 e-Paper', font = font24, fill = 0)
+draw.text((150, 0), u'微雪电子', font = font24, fill = 0)    
+draw.line((20, 50, 70, 100), fill = 0)
+draw.line((70, 50, 20, 100), fill = 0)
+draw.rectangle((20, 50, 70, 100), outline = 0)
+draw.line((165, 50, 165, 100), fill = 0)
+draw.line((140, 75, 190, 75), fill = 0)
+draw.arc((140, 50, 190, 100), 0, 360, fill = 0)
+draw.rectangle((80, 50, 130, 100), fill = 0)
+draw.chord((200, 50, 250, 100), 0, 360, fill = 0)
+epd.display_Fast(epd.getbuffer(Himage))
+time.sleep(2)
 
-try:
-    logging.info("epd4in2g Demo")
+logging.info("2.read bmp file")
+Himage = Image.open(os.path.join(picdir, '4.2inch_G-1.bmp'))
+epd.display_Fast(epd.getbuffer(Himage))
+time.sleep(2)
 
-    epd = epd4in2g.EPD()   
-    logging.info("init and Clear")
-    epd.init()
-    epd.Clear()
-    time.sleep(3)
-    font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
-    font18 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 18)
-    font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
-    font40 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 40)
 
-    # Drawing on the image
-    logging.info("1.Drawing on the image...")
-    Himage = Image.new('RGB', (epd.height, epd.width), epd.WHITE)  
-    draw = ImageDraw.Draw(Himage)
-    draw.rectangle([(0,0),(50,50)],outline = epd.BLACK)
-    draw.rectangle([(55,0),(100,50)],fill = epd.RED)
-    draw.line([(0,0),(50,50)], fill = epd.YELLOW,width = 1)
-    draw.line([(0,50),(50,0)], fill = epd.YELLOW,width = 1)
-    draw.pieslice((55, 60, 95, 100), 90, 180, outline = epd.RED)
-    draw.pieslice((55, 60, 95, 100), 270, 360, fill = epd.BLACK)
-    draw.chord((10, 60, 50, 100), 0, 360, fill = epd.YELLOW)
-    draw.ellipse((55, 60, 95, 100), outline = epd.RED)
-    draw.polygon([(110,0),(110,50),(150,25)],outline = epd.BLACK)
-    draw.polygon([(190,0),(190,50),(150,25)],fill = epd.BLACK)
-    draw.text((120, 60), 'e-Paper demo', font = font15, fill = epd.YELLOW)
-    draw.text((110, 90), u'微雪电子', font = font24, fill = epd.RED)
-
-    epd.display(epd.getbuffer(Himage))
-    time.sleep(3)
-    
-    # read bmp file 
-    logging.info("2.read bmp file")
-    Himage = Image.open(os.path.join(picdir, '4.2inch_G-1.bmp'))
-    epd.display(epd.getbuffer(Himage))
-    time.sleep(3)
-    
-    logging.info("Clear...")
-    epd.Clear()
-    
-    logging.info("Goto Sleep...")
-    epd.sleep()
-        
-except IOError as e:
-    logging.info(e)
-    
-except KeyboardInterrupt:    
-    logging.info("ctrl + c:")
-    epd4in2g.epdconfig.module_exit(cleanup=True)
-    exit()
+logging.info("4.Drawing on the Vertical image...")
+Limage = Image.new('1', (epd.height, epd.width), 255)  # 255: clear the frame
+draw = ImageDraw.Draw(Limage)
+draw.text((2, 0), 'hello world', font = font18, fill = 0)
+draw.text((2, 20), '4.2inch V2 epd', font = font18, fill = 0)
+draw.text((20, 50), u'微雪电子', font = font18, fill = 0)
+draw.line((10, 90, 60, 140), fill = 0)
+draw.line((60, 90, 10, 140), fill = 0)
+draw.rectangle((10, 90, 60, 140), outline = 0)
+draw.line((95, 90, 95, 140), fill = 0)
+draw.line((70, 115, 120, 115), fill = 0)
+draw.arc((70, 90, 120, 140), 0, 360, fill = 0)
+draw.rectangle((10, 150, 60, 200), fill = 0)
+draw.chord((70, 150, 120, 200), 0, 360, fill = 0)
+epd.display_Fast(epd.getbuffer(Limage))
+time.sleep(1)
