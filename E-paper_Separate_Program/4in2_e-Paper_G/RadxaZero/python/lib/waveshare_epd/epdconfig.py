@@ -25,6 +25,10 @@ PIN_DC   = 7
 PIN_RST  = 11
 PIN_BUSY = 10
 
+# these are connected but not sure if they are used
+# DIN = 19
+# CLK = 23 
+
 BUSY_ACTIVE_LOW = os.getenv("EPD_BUSY_ACTIVE_LOW", "0") == "1"
 
 # Backward compatibility
