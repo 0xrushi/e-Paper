@@ -1,0 +1,33 @@
+[Unit]
+Description=E-Paper Framebuffer Mirror Service
+After=multi-user.target
+# Ensure we have video devices ready
+Wants=systemd-udev-settle.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/radxa/e-Paper/RadxaZero/python/examples
+
+# 1. Map the system console (tty1) to the correct framebuffer (fb0)
+ExecStartPre=/usr/bin/con2fbmap 1 0
+
+# 2. Force the system to switch input focus to tty1 (so your keyboard works here)
+ExecStartPre=/usr/bin/chvt 1
+
+# 3. Clear the screen of startup logs so you see a clean login prompt
+ExecStartPre=/bin/sh -c 'TERM=linux setterm -clear all > /dev/tty1'
+
+# 4. Start the Python script that copies fb0 -> e-Paper
+ExecStart=/usr/bin/python3 /home/radxa/e-Paper/RadxaZero/python/examples/epd_4in2_V2_test.py
+
+# Restart automatically if it crashes
+Restart=always
+RestartSec=5
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target
